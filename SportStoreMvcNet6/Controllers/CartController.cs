@@ -6,7 +6,7 @@ namespace SportStoreMvcNet6.Controllers
 {
     public class CartController : Controller
     {
-        private IStoreRepository repository;
+        private readonly IStoreRepository repository;
         private readonly Cart cart;
 
         public CartController(IStoreRepository repo, Cart cartService) {
@@ -14,7 +14,7 @@ namespace SportStoreMvcNet6.Controllers
             cart = cartService;
         }
 
-        public ViewResult Index(string returnUrl) {
+        public ViewResult Index(string? returnUrl) {
             return View(new CartIndexViewModel {
                 Cart = cart,
                 ReturnUrl = returnUrl
@@ -27,7 +27,8 @@ namespace SportStoreMvcNet6.Controllers
             if (product != null) {
                 cart.AddItem(product, 1);
             }
-            return RedirectToAction("Index", new { returnUrl });
+            var result = RedirectToAction("Index", new { returnUrl });
+            return result;
         }
 
         public RedirectToActionResult RemoveFromCart(long productId, string returnUrl) {

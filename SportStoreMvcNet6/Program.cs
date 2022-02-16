@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SportStoreMvcNet6.Models;
+using System.Web.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,19 +13,20 @@ builder.Services.AddDbContext<StoreDbContext>(opts => {
 
 builder.Services.AddScoped<IStoreRepository, EFStoreRepository>();
 builder.Services.AddScoped<IOrderRepository, EFOrderRepository>();
+builder.Services.AddMvc();
+
+//  storing session state in memory, which is the approach here.
+// This has the advantage of simplicity, but it means that the session data is lost when the application is stopped or restarted.  
+//builder.Services.AddMemoryCache();
 builder.Services.AddDistributedMemoryCache();
+
 builder.Services.AddSession();
 builder.Services.AddScoped<Cart>(sp => SessionCart.GetCart(sp));
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment()) {
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
+
 
 app.UseRequestLocalization(opts => {
     opts.AddSupportedCultures("en-US")
@@ -32,7 +34,7 @@ app.UseRequestLocalization(opts => {
     .SetDefaultCulture("en-US");
 });
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseSession();
 
@@ -40,23 +42,31 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapControllerRoute("catpage",
-    "{category}/Page{productPage:int}",
-    new { Controller = "Home", action = "Index" });
 
-app.MapControllerRoute("page",
-    "Page{productPage:int}",
-    new { Controller = "Home", action = "Index", productPage = 1 });
+app.MapControllerRoute(
+   name: null,
+   pattern: "{category}/Page{productPage}",
+   defaults: new { Controller = "Product", action = "List" });
 
-app.MapControllerRoute("category",
-    "{category}",
-    new { Controller = "Home", action = "Index", productPage = 1 });
 
-app.MapControllerRoute("pagination",
-    "Products/Page{productPage}",
-    new { Controller = "Home", action = "Index", productPage = 1 });
+app.MapControllerRoute(
+    name: null,
+    pattern: "Page{productPage:int}",
+    defaults: new { Controller = "Product", action = "List", productPage = 1 });
 
-app.MapDefaultControllerRoute();
+app.MapControllerRoute(
+    name: null,
+    pattern: "{category}",
+    defaults: new { Controller = "Product", action = "List", productPage = 1 });
+
+app.MapControllerRoute(
+    name: null,
+    pattern: "",
+    defaults: new { Controller = "Product", action = "List", productPage = 1 });
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Product}/{action=List}/{id?}");
 
 SeedData.EnsurePopulated(app);
 

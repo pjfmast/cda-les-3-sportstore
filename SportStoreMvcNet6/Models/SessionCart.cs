@@ -7,11 +7,18 @@ namespace SportStoreMvcNet6.Models
     {
 
         public static Cart GetCart(IServiceProvider services) {
-            ISession? session = services.GetRequiredService<IHttpContextAccessor>()
-                .HttpContext?.Session;
-            SessionCart cart = session?.GetJson<SessionCart>("Cart")
+            ISession? session 
+                = services
+                .GetRequiredService<IHttpContextAccessor>()
+                .HttpContext
+                ?.Session;
+
+            SessionCart cart 
+                = session
+                ?.GetJson<SessionCart>("Cart")
                 ?? new SessionCart();
             cart.Session = session;
+
             return cart;
         }
 

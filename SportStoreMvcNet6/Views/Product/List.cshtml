@@ -6,11 +6,11 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 
-@foreach (Product p in Model.Products) {
-   @await Html.PartialAsync("ProductSummary", p)
+@foreach (var p in Model?.Products ?? Enumerable.Empty<Product>()) {
+    <partial name="ProductSummary" model="p" />
 }
 
-<div page-model="@Model.PagingInfo" page-action="List" page-classes-enabled="true"
+<div page-model="@Model?.PagingInfo" page-action="List" page-classes-enabled="true"
      page-class="btn" page-class-normal="btn-secondary"
-     page-class-selected="btn-primary" page-url-category="@Model.CurrentCategory" class="btn-group pull-right m-1">
+     page-class-selected="btn-primary" page-url-category="@Model?.CurrentCategory!" class="btn-group pull-right m-1">
 </div>
