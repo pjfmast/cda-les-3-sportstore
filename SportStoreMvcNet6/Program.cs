@@ -36,7 +36,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseSession();
 
-//app.UseRouting();
+app.UseRouting();
 
 app.UseAuthorization();
 
@@ -44,10 +44,12 @@ app.MapControllerRoute("catpage",
     "{category}/Page{productPage:int}",
     new { Controller = "Home", action = "Index" });
 
-app.MapControllerRoute("page", "Page{productPage:int}",
+app.MapControllerRoute("page",
+    "Page{productPage:int}",
     new { Controller = "Home", action = "Index", productPage = 1 });
 
-app.MapControllerRoute("category", "{category}",
+app.MapControllerRoute("category",
+    "{category}",
     new { Controller = "Home", action = "Index", productPage = 1 });
 
 app.MapControllerRoute("pagination",
